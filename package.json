@@ -4,7 +4,12 @@
   "description": "mock amazon retail app",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ihatetoast/bamazon.git"
   },
   "keywords": [
     "mysql",
@@ -13,6 +18,8 @@
   "author": "Katy Cassidy",
   "license": "ISC",
   "dependencies": {
+    "cli-table": "^0.3.1",
+    "colors": "^1.1.2",
     "inquirer": "^5.0.1",
     "mysql": "^2.15.0"
   }
