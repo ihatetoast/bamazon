@@ -123,10 +123,17 @@ function newOrder(){
     })
 }
 function buyItem(item, qty, price){
-  console.log(`buyItem has been called with 
+  const date = new Date();
+  console.log(`Receipt:
+  Kabamazon Timestamp: ${date}
+  Cashier: KatyCa
   item: ${item}
   qty: ${qty}
   price: ${price}`);
+  const subTotal = qty * price;
+  const tax = subTotal * 0.0625;
+  const total = subTotal + tax;
+  console.log(`total is ${total}`);
 }
 /**
  * 
