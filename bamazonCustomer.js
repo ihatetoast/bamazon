@@ -45,7 +45,6 @@ connection.connect(function(err) {
 //function GOSHOPPING gets cust order and checks if there's enough
 
 function goShopping(){
-
   inquirer
   .prompt([
     {
@@ -93,15 +92,28 @@ function goShopping(){
         console.log(`Customer wants ${custQty} and we have ${stockQty}`);
         //capture cust's qty and subtract from stock
         //update table with new qty
-
         //capture cust's qty and multiply times price and .0625
-        buyItem(itemId, custQty, price);
+        let query = "UPDATE products SET ? WHERE ? ";
+        connection.query(query, [{stock_quantity: stockQty - custQty},{item_id: answers.id}], function(err, res) {
+            console.log(res);
+          // res[0].stock_quantity
+        });
+        const date = new Date();
+        console.log(`Kamazon receipt:
+        Date: ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}
+        Cashier: KatyCa
+        item: ${itemId}
+        qty: ${custQty}
+        price: ${price}`);
+        const subTotal = custQty * price;
+        const tax = subTotal * 0.0625;
+        const total = subTotal + tax;
+        console.log(`total is ${total}`);
       }
-      
     });
-  })
-  
+  } )
 }
+
 
 function newOrder(){
   inquirer
@@ -122,19 +134,12 @@ function newOrder(){
       }
     })
 }
-function buyItem(item, qty, price){
-  const date = new Date();
-  console.log(`Receipt:
-  Kabamazon Timestamp: ${date}
-  Cashier: KatyCa
-  item: ${item}
-  qty: ${qty}
-  price: ${price}`);
-  const subTotal = qty * price;
-  const tax = subTotal * 0.0625;
-  const total = subTotal + tax;
-  console.log(`total is ${total}`);
-}
+// UPDATE products
+// SET stock_quantity = 1
+// WHERE id = 1;
+
+  
+  
 /**
  * 
  * The app should then prompt users with two messages.
