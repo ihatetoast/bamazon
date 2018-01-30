@@ -17,16 +17,17 @@ var connection = mysql.createConnection({
 });
 
 var table = new Table({
-  head: ['ID', 'Item', 'Price']
-, colWidths: [5, 40, 15]
+  head: ['ID', 'Item', 'Price'], 
+  colWidths: [5, 40, 15]
 });
+
 //show the customer what is available
 connection.connect(function(err) {
   if (err) throw err;
   connection.query("SELECT * FROM products", function(err, res) {
     for (var i = 0; i < res.length; i++) {  
       table.push(
-        [res[i].item_id, res[i].product_name, res[i].price]
+        [res[i].item_id, res[i].product_name, (res[i].price).toFixed(2)]
       )
     }
     console.log(table.toString());
@@ -76,39 +77,46 @@ function goShopping(){
     console.log(`Customer wants ${answers.qty} of item #${answers.id}`);
     //get qty of id from db
     connection.query("SELECT * FROM products WHERE ?", { item_id: answers.id }, function(err, res) {
-      var custQty = answers.qty;
-      var itemId = answers.id;
-      var stockQty = res[0].stock_quantity;
-      var price = res[0].price;
       if(err){
         console.log(`We are sorry, but product #${answers.id} is not a valid ID`);
         goShopping();
       }
+      var custQty = answers.qty;
+      var itemId = answers.id;
+      var stockQty = res[0].stock_quantity;
+      var price = res[0].price;
+      
       if(custQty > stockQty){
         console.log(`We are sorry, but there is insufficient quantity in stock at the moment.`);
         newOrder();
       }
       else {
-        console.log(`Customer wants ${custQty} and we have ${stockQty}`);
+        // console.log(`Customer wants ${custQty} and we have ${stockQty}`);
         //capture cust's qty and subtract from stock
         //update table with new qty
         //capture cust's qty and multiply times price and .0625
         let query = "UPDATE products SET ? WHERE ? ";
         connection.query(query, [{stock_quantity: stockQty - custQty},{item_id: answers.id}], function(err, res) {
-            console.log(res);
-          // res[0].stock_quantity
-        });
-        const date = new Date();
-        console.log(`Kamazon receipt:
-        Date: ${date.getDate()}-${date.getMonth()}-${date.getFullYear()}
-        Cashier: KatyCa
+            const date = new Date();
+        console.log(`
+        ${colors.rainbow("KABAMAZON receipt:")}
+        Timestamp: ${date.getDate()}-${date.getMonth()+1}-${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}
+        Cashier: KatyCa001
         item: ${itemId}
         qty: ${custQty}
         price: ${price}`);
         const subTotal = custQty * price;
+
         const tax = subTotal * 0.0625;
         const total = subTotal + tax;
-        console.log(`total is ${total}`);
+
+        console.log(`
+        sub: ${subTotal}
+        tax: ${tax}
+        ${colors.rainbow("total:")} ${total.toFixed(2)}`);
+        });
+        
+
       }
     });
   } )
