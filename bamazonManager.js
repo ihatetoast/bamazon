@@ -11,11 +11,16 @@ var connection = mysql.createConnection({
   password: "root",
   database: "bamazonDB"
 });
-//is this the solution to my issues in customer?
-connection.connect();
+
+connection.connect(function(err) {
+  if (err) throw err;
+});
 
 function managerView(){
-  console.log(colors.red("This portal is for managers only."));
+  console.log(`${colors.rainbow("KABAMAZON")}
+  Our products on offer. 
+  Remember, your EoFY bonus hangs on getting products out the door.
+  `);
   inquirer
   .prompt([
     {
@@ -28,7 +33,7 @@ function managerView(){
   .then((answers) => {
     switch(answers.manager){
       case "View products":
-        console.log("View products chosen");
+        viewProducts();
         break;
       case "View items low in stock":
         console.log("View items low in stock chosen");
@@ -42,6 +47,33 @@ function managerView(){
       default:
         console.log("oops");
     }
+  })
+}
+function viewProducts() {
+  console.log(`${colors.rainbow("KABAMAZON")} Product View:
+  Remember: Your bonus depends on moving inventory out!
+  We are all about the bottom line here. Give up the family.`);
+    
+  connection.query("SELECT * FROM products", function(err, res){
+    //instatiate the table:
+    var table = new Table({
+      head: ['ID', 'Item', 'Price', 'Qty'], 
+      colWidths: [5, 40, 15, 10]
+    });
+
+    if (err) throw err;
+
+    for (var i = 0; i < res.length; i++) {  
+      let qty = res[i].stock_quantity;
+      if(qty < 5){
+        qty = colors.magenta(qty)
+        }
+      table.push(
+        [res[i].item_id, res[i].product_name, res[i].price, qty]
+        )
+      };
+      console.log(table.toString());
+      managerView();
   })
 }
 /*Manager View (Next Level)
