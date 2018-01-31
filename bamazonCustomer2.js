@@ -14,7 +14,7 @@ function inviteToShop(){
     {
       name: 'shop',
       type: 'confirm',
-      message: 'Hello. Would you like to make a purchase?'
+      message: 'Hello. Would you like to shop?'
     }
   ])
   .then((answer) => {
@@ -101,7 +101,7 @@ function goShopping(){
             
             if(custQty > stockQty){
               console.log(`We are sorry, but there is insufficient quantity in stock at the moment.`);
-              connection.end();
+              return;
             }
             else {
               let query = "UPDATE products SET ? WHERE ? ";
@@ -119,7 +119,7 @@ function goShopping(){
                 ${colors.rainbow("total:")} ${total}
                 `);
               });
-              connection.end();
+              
             }
           });
         } )
