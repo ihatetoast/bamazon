@@ -143,22 +143,80 @@ function addToStock(){
     })
   })
 }
-function addMore(){
-  inquirer
-    .prompt({
-      type: "confirm",
-      name: "addMore",
-      message: "Would you like to add more stock?"
-    })
-    .then((answer)=>{
-      if(answer.addMore){
-        addToStock();
+
+function addNewProduct(){  
+  console.log(`***** ${colors.yellow("Add a")} ${colors.rainbow("NEW")} ${colors.yellow("item!")} *****`);
+  connection.query("SELECT * FROM products", function(err, res){
+    inquirer
+    .prompt([
+      {
+        name: "prod",
+        message: "Product name:",
+      },
+      {
+        type: "list",
+        name: "dept",
+        message: "Department:",
+        choices: ["Women's", "Men's", "Undergarments", "Cosmetics and perfume", "Lingerie", "Kids", "Shoes"]
+      },
+      {
+        name: "price",
+        message: "Price per individual item:",
+        validate: function(val){
+          if(isNaN(val)){
+            return 'Please enter a number';
+          }
+          else {
+            return true;
+          }
+        }
+      },
+      {
+        name: "qty",
+        message: "Quantity:",
+        validate: function(val){
+          if(isNaN(val)){
+            return 'Please enter a number';
+          } else if(val > 50){
+            return 'Please be mindful of overstocking. Enter a number less than 50.'
+          }
+          else {
+            return true;
+          }
+        }
       }
-      else {
-        managerView();
+    ])
+    .then((answers) => {
+      let product = answers.prod;
+      let dept = answers.dept;
+      let price = parseInt(answers.price);
+      let qty = parseInt(answers.qty);
+      //create object and insert
+      let newProduct = {
+        product_name: product,
+        department_name: dept,
+        price,
+        stock_quantity: qty
       }
+
+      console.log(`you are adding ${newProduct.product_name} to the ${newProduct.department_name}`);
+      /*INSERT INTO exercise_logs (TYPE, minutes, calories, heart_rate) VALUES
+	("cycling", 30, 100, 110),
+  */  
+      const query = "INSERT INTO products SET ?;";
+      connection.query(query, newProduct, function(err, res){
+        console.log("success");
+        setTimeout(()=>{
+          showTable();
+          setTimeout(()=>{
+            addMore();
+          }, 1000);
+        }, 1000);
+      })
     })
+  })
 }
+
 // }
 // function addNewProduct(){
 //   console.log("Add new product fired");
@@ -197,6 +255,32 @@ If a manager selects Add to Inventory, your app should display a prompt that wil
 If a manager selects Add New Product, it should allow the manager to add a completely new product to the store.
 
 ----*/
+
+//HELPER FCNS
+function addMore(){
+  inquirer
+    .prompt({
+      type: "list",
+      name: "addMore",
+      message: "What would you like to do next?",
+      choices: ["Add more to existing stock.", "Add another new product.", "Return to the manager screen", "Close program"]
+    })
+    .then((answer)=>{
+      switch(answer.addMore){
+        case "Add more to existing stock.":
+          addToStock();
+          break;
+        case "Add another new product.":
+          addNewProduct();
+          break;
+        case "Return to the manager screen":
+          managerView();
+          break;
+        default:
+          connection.end();
+      }
+    })
+}
 
 //table fcn needed more than once
 function showTable(){

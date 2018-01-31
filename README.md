@@ -20,6 +20,11 @@ The second option returns just those items low in stock.
 LICEcap of manager portal (view all stock & view low stock functions):
 ![screencast of manager portal](./bamazon_manager_1.gif)
 
+In the screencast below, the manager can add more (quantity) to an item that is already in the inventory. She can also add a completely new product.
+
+LICEcap of manager portal (add to existing item & add a new product):
+![screencast of manager portal](./bamazon_manager_2.gif)
+
 Packages used:
 
 * Inquirer
